@@ -1,4 +1,6 @@
-<?php include ('includes/header.php')?>
+<?php
+include ('includes/header.php');
+auth();?>
     <div class="container">
         <div class="sidebar">
             <div class="header">
@@ -54,7 +56,13 @@
                     <div class="icons">
                         <i class="fa fa-video"></i>
                         <i class="fa fa-phone"></i>
-                        <i class="fa fa-ellipsis-vertical"></i>
+                        <div class="dropdown">
+                        <i class="fa fa-ellipsis-v " type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        </i>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
