@@ -58,14 +58,17 @@ $contact_query_run = mysqli_query($connection, $contact_query);
             </div>
         </div>
         <div class="chat_area">
-            
+            <?php $chat_query = "SELECT `id`,`name`, `username`, `image` FROM `users` WHERE id = $chatid";
+                        $chat_query_run = mysqli_query($connection, $chat_query);
+                        $chat_data = mysqli_fetch_array($chat_query_run);?>
                 <div class="chat_header">
                 <div class="user_info">
                     <div class="user_pic">
+                        <img src="../<?php echo $chat_data['image']; ?>" alt="Hassam">
                     </div>
                     <div class="user_details">
-                        <h4></h4>
-                        <p></p>
+                        <h4><?php echo $chat_data['name']; ?></h4>
+                        <p><?php echo $chat_data['username']; ?></p>
                     </div>
                     <div class="icons">
                         <i class="fa fa-video"></i>
@@ -82,24 +85,74 @@ $contact_query_run = mysqli_query($connection, $contact_query);
                 </div>
             </div>
 
-            <div class="chat_display" id="chatDisplay" >
-
-                    <div class="message outgoing"style = "margin-right: 250px; margin-top: 100px" >
-                        <p>SELECT A USER TO START CHATTING</p>
-                    </div>
+            <div class="chat_display" id="chatDisplay">
+               
                 
             </div>
 
-            <!-- <form class="chat_input" method = "POST" action = "/controller">
-                <input type="text" name="message" placeholder="Type a message">
-                <button type="submit" name = "send_btn">
+            <div class="chat_input" method = "POST" action = "/controller">
+                <input type="hidden" id ="to_id" value = "<?php echo $chatid; ?>">
+                <input type="text" id ="message" placeholder="Type a message">
+                <button type="button" id = "send_btn">
                     <i class="fa fa-paper-plane"></i>
                 </button>
-                    </form> -->
+                    </div>
                 
             
         </div>
     </div>
+
+    <script type="text/javascript" src="../assets/js/jquery.js"></script>
+<script type = "text/javascript">
+    $(document).ready(function() {
+        var chatid = "<?php echo $chatid; ?>";
+        function Loadchat(){
+            $.ajax({
+                url:"/load",
+                type:"POST",
+                data:{chatid:chatid},
+                success: function(responce){
+                    $("#chatDisplay").html(responce);
+                    $("#chatDisplay").scrollTop($("#chatDisplay")[0].scrollHeight);
+                }
+
+            })
+        }
+
+        function updateseen(){
+            $.ajax({
+                url:"/updateseen",
+                type:"POST",
+                data:{chatid:chatid},
+                success: function(responce){
+                }
+            })
+        }
+
+        $("#send_btn").on("click", function(e) {
+            e.preventDefault();
+            var to_id = $("#to_id").val();
+            var message = $("#message").val();
+            $.ajax({
+                url:"/ajax",
+                type:"POST",
+                data:{to_id:to_id, message:message},
+                success: function(responce){
+                    $("#message").val("");  
+                    Loadchat();
+                    updateseen();
+                }
+            })
+        });
+
+
+
+        Loadchat();
+        setInterval(Loadchat, 5000);
+        setInterval(updateseen, 6000);
+
+    })
+</script>
 
 
     

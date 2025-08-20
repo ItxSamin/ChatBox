@@ -58,5 +58,30 @@ if (isset($_POST['login_btn'])) {
 
 }
 
+if(isset($_POST['add_contact'])){
+
+    $username = $_POST['username'];
+    $select_query = "SELECT * FROM `users` WHERE `username` = '$username'";
+    $select_query_run = mysqli_query($connection, $select_query);
+    if(mysqli_num_rows($select_query_run) > 0){
+        $contact_data = mysqli_fetch_array($select_query_run);
+        $insert_query = "INSERT INTO `contacts`(`user_id`, `cont_user_id`) VALUES ('$_SESSION[id]','$contact_data[id]')";
+        $insert_query_run = mysqli_query($connection, $insert_query);
+        if($insert_query_run){
+            header("Location:/");
+        }
+        else{
+            echo "Error";
+            // header("Location:/add");
+        }
+    }
+    else{
+        echo "Invalid Username";
+        // header("Location:/add");
+    }
+    
+   
+}
+
 
 ?>

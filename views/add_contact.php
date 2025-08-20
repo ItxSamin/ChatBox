@@ -11,12 +11,12 @@
             <h2>Add Contact</h2>
         </div>
         <div class="login-container">
-            <form id="login-form">
+            <form id="login-form" method="POST" action="/controller">
                 <div class="login-form-group">
                     <label >Username</label>
-                    <input type="text" required>
+                    <input type="text" name="username" required>
                 </div>
-                <button type="submit" class="signin-btn">Add-Contact</button>
+                <button type="submit" class="signin-btn" name = "add_contact">Add-Contact</button>
             </form>
         </div>
     </div>
