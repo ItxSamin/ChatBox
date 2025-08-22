@@ -1,14 +1,12 @@
 <?php
 include ('includes/header.php');
 auth();
-
+$sessionid = $_SESSION['id'];
 $user_query = "SELECT * FROM `users` where id = ".$_SESSION['id'];
 $user_query_run = mysqli_query($connection, $user_query);
 $user_data = mysqli_fetch_array($user_query_run);
 $contact_query = "SELECT * FROM `contacts` where user_id = ".$_SESSION['id'];
 $contact_query_run = mysqli_query($connection, $contact_query);
-
-
 
 ?>
     <div class="container">
@@ -39,21 +37,8 @@ $contact_query_run = mysqli_query($connection, $contact_query);
                 </div> -->
                 </div>
 
-                <div class="messages_pool">
-                    <?php while ($contact_data = mysqli_fetch_array($contact_query_run)) {
-                        $contact_pool_query = "SELECT `name`, `username`, `image` FROM `users` WHERE id = $contact_data[cont_user_id]";
-                        $contact_pool_query_run = mysqli_query($connection, $contact_pool_query);
-                        $contact_pool_data = mysqli_fetch_array($contact_pool_query_run);?>
-                    <a class="messages_card active" type="button" href="/chat/<?php echo $contact_data['cont_user_id']; ?>">
-                        <div class="sender_pic">
-                            <img src="../<?php echo $contact_pool_data['image']; ?>">
-                        </div>
-                        <div class="sender_details">
-                            <h4><?php echo $contact_pool_data['name'];?></h4>
-                            <p><?php echo $contact_pool_data['username'];?></p>
-                        </div>
-                    </a>
-                    <?php } ?>
+                <div class="messages_pool" id = "messages_pool">
+                    
                 </div>
             </div>
         </div>
@@ -105,53 +90,69 @@ $contact_query_run = mysqli_query($connection, $contact_query);
     <script type="text/javascript" src="../assets/js/jquery.js"></script>
 <script type = "text/javascript">
     $(document).ready(function() {
-        var chatid = "<?php echo $chatid; ?>";
-        function Loadchat(){
-            $.ajax({
-                url:"/load",
-                type:"POST",
-                data:{chatid:chatid},
-                success: function(responce){
-                    $("#chatDisplay").html(responce);
-                    $("#chatDisplay").scrollTop($("#chatDisplay")[0].scrollHeight);
-                }
+    var chatid = "<?php echo $chatid; ?>";
 
-            })
-        }
-
-        function updateseen(){
-            $.ajax({
-                url:"/updateseen",
-                type:"POST",
-                data:{chatid:chatid},
-                success: function(responce){
-                }
-            })
-        }
-
-        $("#send_btn").on("click", function(e) {
-            e.preventDefault();
-            var to_id = $("#to_id").val();
-            var message = $("#message").val();
-            $.ajax({
-                url:"/ajax",
-                type:"POST",
-                data:{to_id:to_id, message:message},
-                success: function(responce){
-                    $("#message").val("");  
-                    Loadchat();
-                    updateseen();
-                }
-            })
+    function loadChat(){
+        $.ajax({
+            url: "/load",
+            type: "POST",
+            data: {chatid: chatid},
+            success: function(response){
+                $("#chatDisplay").html(response);
+                $("#chatDisplay").scrollTop($("#chatDisplay")[0].scrollHeight);
+            },
         });
+    }
+
+    function loadPool(){
+        $.ajax({
+            url: "/loadpool",
+            type: "POST",
+            success: function(response){
+                $("#messages_pool").html(response);
+            },
+            error: function(xhr, status, error) {
+                console.log("Error loading contacts: " + error);
+            }
+        });
+    }
+
+    $("#send_btn").on("click", function(e) {
+        e.preventDefault();
+        var to_id = $("#to_id").val();
+        var message = $("#message").val().trim();
+        
+        if(message === "") {
+            alert("Please enter a message");
+            return;
+        }
+        
+        $.ajax({
+            url: "/ajax",
+            type: "POST",
+            data: {to_id: to_id, message: message},
+            success: function(response){
+                $("#message").val("");  
+                loadChat();
+                loadPool();
+            },
+        });
+    });
+
+    $("#message").on("keypress", function(e) {
+        if(e.which === 13) {
+            $("#send_btn").click();
+        }
+    });
 
 
+    loadPool();
+    loadChat();
+    
 
-        Loadchat();
-        setInterval(Loadchat, 5000);
-        setInterval(updateseen, 6000);
-
-    })
+    setInterval(loadPool, 3000);
+    setInterval(loadChat, 3000);
+});
 </script>
 
 

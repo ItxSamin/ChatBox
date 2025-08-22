@@ -10,12 +10,10 @@ get('/add', 'views/add_contact.php');
 get('/logout', 'control/logout.php');
 get('/chat/$chatid', 'views/chat.php');
 get('/ajax', 'control/ajax.php');
-post('/updateseen','control/updateseen.php');
-post('/updatenmbr','control/updatenmbr.php');
+post('/loadpool', 'control/chtpool.php');
 post('/load', 'control/load.php');
 post('/controller', 'control/controller.php');
 post('/ajax', 'control/ajax.php');
-
 
 
 any('/404','views/404.php');

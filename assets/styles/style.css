@@ -146,7 +146,7 @@
         }
 
         .messages_card.active {
-            background-color: #f4f7ff;
+            background-color: red;
         }
 
         .sender_pic img {
